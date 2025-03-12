@@ -1,8 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import Login from './components/Authentication/Login';
+import Signup from './components/Authentication/Signup';
 import RunEntryForm from './components/RunTracking/RunEntryForm';
 import RecentRunsList from './components/RunTracking/RecentRunsList';
 
-function App() {
+// Protected route component to check for authentication
+const ProtectedRoute = ({ children }) => {
+  const isAuthenticated = localStorage.getItem('token') !== null;
+  
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+  
+  return children;
+};
+
+// Main dashboard component that contains the run tracking functionality
+const Dashboard = () => {
+  const navigate = useNavigate();
   const [runs, setRuns] = useState([]);
   const [selectedRun, setSelectedRun] = useState(null);
   const [showForm, setShowForm] = useState(false);
@@ -36,6 +52,11 @@ function App() {
     console.log("Selected run:", run);
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    navigate('/login');
+  };
+
   return (
     <div style={{ padding: '20px', maxWidth: '1000px', margin: '0 auto' }}>
       <header style={{ 
@@ -47,19 +68,35 @@ function App() {
         paddingBottom: '15px'
       }}>
         <h1 style={{ margin: 0 }}>Running Tracker App</h1>
-        <button 
-          onClick={() => setShowForm(!showForm)}
-          style={{ 
-            backgroundColor: '#4299e1', 
-            color: 'white', 
-            padding: '10px 15px', 
-            border: 'none', 
-            borderRadius: '4px',
-            cursor: 'pointer'
-          }}
-        >
-          {showForm ? 'Cancel' : 'Log New Run'}
-        </button>
+        <div>
+          <button 
+            onClick={() => setShowForm(!showForm)}
+            style={{ 
+              backgroundColor: '#4299e1', 
+              color: 'white', 
+              padding: '10px 15px', 
+              border: 'none', 
+              borderRadius: '4px',
+              cursor: 'pointer',
+              marginRight: '10px'
+            }}
+          >
+            {showForm ? 'Cancel' : 'Log New Run'}
+          </button>
+          <button 
+            onClick={handleLogout}
+            style={{ 
+              backgroundColor: '#f56565', 
+              color: 'white', 
+              padding: '10px 15px', 
+              border: 'none', 
+              borderRadius: '4px',
+              cursor: 'pointer'
+            }}
+          >
+            Logout
+          </button>
+        </div>
       </header>
 
       {showForm ? (
@@ -103,6 +140,23 @@ function App() {
         </div>
       )}
     </div>
+  );
+};
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/dashboard" element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        } />
+        <Route path="/" element={<Navigate to="/login" replace />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
