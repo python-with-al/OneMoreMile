@@ -55,7 +55,7 @@ const Dashboard = () => {
             boxSizing: 'border-box' ,
             width: '100%',
         }}>
-            <img src="/src/assets/OneMoreMile logo.png" alt="Logo" style={{ height: '400px', justifyContect: 'center',alignItems: 'center', }} />
+            <img src="/src/assets/OneMoreMile logo.png" alt="Logo" style={{ height: '450px', justifyContect: 'center',alignItems: 'center', }} />
             <header style={{ 
                 display: 'flex', 
                 justifyContent: 'center', 
