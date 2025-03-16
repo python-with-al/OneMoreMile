@@ -35,9 +35,9 @@ const Login = () => {
       });
 
       const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Login failed');
+      if (response.status === 400) {
+        setError('Username or password is incorrect');
+        return;
       }
 
       // Store token in localStorage
@@ -48,9 +48,10 @@ const Login = () => {
     } catch (err) {
       // For demo purposes, we can bypass the API call
       // Comment out the code below and use the real API call above in production
-      console.log('Would normally call API, bypassing for demo');
-      localStorage.setItem('token', 'demo-token');
-      navigate('/dashboard');
+      // console.log('Would normally call API, bypassing for demo');
+      // localStorage.setItem('token', 'demo-token');
+      // navigate('/dashboard');
+      console.log('Login error:', err);
       
       // Uncomment this in production
       // setError(err instanceof Error ? err.message : 'An unknown error occurred');
@@ -64,12 +65,13 @@ const Login = () => {
       display: 'flex', 
       justifyContent: 'center', 
       alignItems: 'center', 
-      minHeight: '100vh',
-      backgroundColor: '#f7fafc'
+      minHeight: '50vh',
+      backgroundColor: '#f7fafc',
+      width: '100%'
     }}>
       <div style={{ 
         width: '100%', 
-        maxWidth: '400px', 
+        maxWidth: '1920px', 
         padding: '2rem', 
         backgroundColor: 'white',
         borderRadius: '8px',
@@ -79,7 +81,7 @@ const Login = () => {
           src="/src/assets/OneMoreMile logo.png" 
           alt="Running Tracker Logo" 
           style={{ 
-            display: 'block', 
+            display: 'inline-block', 
             margin: '0 auto 0rem', 
             width: '306px', 
             height: '306px' 

@@ -57,8 +57,9 @@ const Signup = () => {
     } catch (err) {
       // For demo purposes, we can bypass the API call
       // Comment out the code below and use the real API call above in production
-      console.log('Would normally call API, bypassing for demo');
-      navigate('/login', { state: { message: 'Account created successfully! Please login.' } });
+      // console.log('Would normally call API, bypassing for demo');
+      // navigate('/login', { state: { message: 'Account created successfully! Please login.' } });
+      console.log('Signup error:', err);
       
       // Uncomment this in production
       // setError(err instanceof Error ? err.message : 'An unknown error occurred');
@@ -70,6 +71,7 @@ const Signup = () => {
   return (
     <div style={{ 
       display: 'flex', 
+      width: '100%',
       justifyContent: 'center', 
       alignItems: 'center', 
       minHeight: '100vh',

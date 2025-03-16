@@ -68,11 +68,12 @@ const RecentRunsList = ({ runs = [], onRunSelect }) => {
 
   return (
     <div style={{ 
-      maxWidth: '800px', 
+      maxWidth: '19200px', 
       margin: '0 auto', 
       padding: '20px', 
       border: '1px solid #ccc', 
-      borderRadius: '5px' 
+      borderRadius: '5px' ,
+      width: '100%'
     }}>
       <h2 style={{ marginBottom: '15px' }}>Recent Runs</h2>
       
