@@ -35,8 +35,12 @@ app.use('/api/auth', authRoutes);
 
 import auth from './middleware/auth.js';
 
-import getCurrentUser from './routes/users.js';
-app.get('/api/users/me', auth, getCurrentUser);
+import usersRoutes from './routes/users.js';
+app.use('/api/users', usersRoutes);
+// app.get('/api/users/getCurrentUser', auth, getCurrentUser);
+
+import activityRoutes from './routes/activities.js';
+app.use('/api/activities', activityRoutes);  
 
 // Start server
 const PORT = process.env.PORT || 5000;

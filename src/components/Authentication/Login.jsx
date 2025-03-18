@@ -42,6 +42,8 @@ const Login = () => {
 
       // Store token in localStorage
       localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+      console.log('Login successful:', data);
       
       // Redirect to dashboard
       navigate('/dashboard');

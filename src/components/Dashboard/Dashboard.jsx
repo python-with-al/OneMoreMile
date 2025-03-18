@@ -9,7 +9,15 @@ const Dashboard = () => {
     const [runs, setRuns] = useState([]);
     const [selectedRun, setSelectedRun] = useState(null);
     const [showForm, setShowForm] = useState(false);
-
+    const calculatePace = (distance, duration) => {
+        if (!distance || !duration) return "0:00";
+    
+        const paceInMinutes = duration / distance;
+        const minutes = Math.floor(paceInMinutes);
+        const seconds = Math.round((paceInMinutes - minutes) * 60);
+    
+        return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+      };
     const handleRunAdded = (newRun) => {
         // In a real app, you'd send this to your backend
         // For now, we'll just add it to our state with a fake ID
@@ -21,16 +29,6 @@ const Dashboard = () => {
 
         setRuns([runWithId, ...runs]);
         setShowForm(false);
-    };
-
-    const calculatePace = (distance, duration) => {
-        if (!distance || !duration) return "0:00";
-
-        const paceInMinutes = duration / distance;
-        const minutes = Math.floor(paceInMinutes);
-        const seconds = Math.round((paceInMinutes - minutes) * 60);
-
-        return `${minutes}:${seconds.toString().padStart(2, '0')}`;
     };
 
     const handleRunSelect = (run) => {

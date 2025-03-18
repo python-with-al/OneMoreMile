@@ -6,7 +6,9 @@ import User from '../models/User.js';
 export const getCurrentUser = async (req, res) => {
   try {
     // Find user by id but don't return password
-    const user = await User.findById(req.user.id).select('-password');
+    console.log("User ID:", req.user.id);
+    const user = await User.findOne(req.user.email).select('-password');
+    
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
@@ -47,7 +49,7 @@ export const updateProfile = async (req, res) => {
 const router = express.Router();
 
 // Define routes
-router.get('/me', getCurrentUser);
-router.put('/me', updateProfile);
+router.get('/getCurrentUser', getCurrentUser);
+router.put('/updateProfile', updateProfile);
 
 export default router;

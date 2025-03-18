@@ -4,6 +4,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
 import { check, validationResult } from 'express-validator';
+import { act } from 'react';
 
 const router = express.Router();
 
@@ -128,7 +129,11 @@ router.post(
             id: user.id,
             name: user.name,
             email: user.email,
-            preferences: user.preferences
+            preferences: user.preferences,
+            activities: user.activities,
+            premium: user.premium,
+            payments: user.payments,
+            thirdParty: user.thirdParty
           }});
         }
       );

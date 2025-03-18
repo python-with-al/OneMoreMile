@@ -3,10 +3,30 @@ import React, { useState } from 'react';
 
 const RunEntryForm = ({ onRunAdded }) => {
   const [formData, setFormData] = useState({
+    type: 'runs',
+    source: 'manual',
     date: new Date().toISOString().split('T')[0],
     distance: '',
     duration: '',
-    notes: ''
+    avgPace: '',
+    notes: '',
+    calories: '',
+    avgHR: '',
+    maxHR: '',
+    avgCadence: '',
+    maxCadence: '',
+    totalAscent: '',
+    totalDescent: '',
+    avgStrideLength: '',
+    avgVerticalRatio: '',
+    avgVerticalOscillation: '',
+    avgGCT: '',
+    avgGCTBalance: '',
+    trainingStressScore: '',
+    steps: '',
+    decompression: '',
+    minElevation: '',
+    maxElevation: ''
   });
 
   const handleChange = (e) => {
@@ -17,9 +37,47 @@ const RunEntryForm = ({ onRunAdded }) => {
     });
   };
 
+  const postActivity = async (data) => {
+    try {
+      console.log("Posting activity data:", data);
+      const response = await fetch('http://localhost:5000/api/activities/postActivity', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-auth-token': localStorage.getItem('token')
+        },
+        body: JSON.stringify(data)
+      });
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('There was a problem with the fetch operation:', error);
+    }
+  };
+
+  const calculatePace = (distance, duration) => {
+    if (!distance || !duration) return "0:00";
+
+    const paceInMinutes = duration / distance;
+    const minutes = Math.floor(paceInMinutes);
+    const seconds = Math.round((paceInMinutes - minutes) * 60);
+
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Run data submitted:", formData);
+    try {
+      formData['avgPace'] = calculatePace(formData.distance, formData.duration);
+      formData['source'] = 'manual';
+      console.log("Form data before submission:", formData);
+      const response = postActivity(formData);
+      console.log("response:", response);
+    } catch (error) {
+      console.error('There was a problem storing new run:', error);
+    }
     
     if (onRunAdded) {
       onRunAdded(formData);
@@ -31,6 +89,25 @@ const RunEntryForm = ({ onRunAdded }) => {
       <h2 style={{ marginBottom: '20px' }}>Log Your Run</h2>
       
       <form onSubmit={handleSubmit}>
+        <div style={{ marginBottom: '15px' }}>
+          <label style={{ display: 'block', marginBottom: '5px' }}>
+            Activity Type:
+          </label>
+          <select
+            name="type"
+            value={formData.type} 
+            onChange={handleChange}
+            style={{ width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px' }}
+          >
+            <option value="runs">Run</option>
+            <option value="bikes">Bike</option>
+            <option value="swims">Swim</option>
+            <option value="hikes">Hike</option>
+            <option value="walks">Walk</option>
+            <option value="weights">Weights</option>
+            <option value="others">Other</option>
+          </select>
+        </div>
         <div style={{ marginBottom: '15px' }}>
           <label style={{ display: 'block', marginBottom: '5px' }}>
             Date:

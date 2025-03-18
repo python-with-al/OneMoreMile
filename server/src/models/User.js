@@ -44,9 +44,9 @@ const UserSchema = new mongoose.Schema({
     enum: ['user', 'admin'],
     default: 'user'
   },
-  runs: {
+  activities: {
     type: Map,
-    default: []
+    default: {runs: [], bikes: [], swims: [], hikes: [], walks: [], weights: [], others: []}
   },
   premium: {
     type: Map,
@@ -55,7 +55,11 @@ const UserSchema = new mongoose.Schema({
   payments: {
     type: Map,
     default: {}
-  }
+  },
+  thirdParty: {
+    type: Map,
+    default: {}
+  },
 }, {
   timestamps: true // Automatically adds createdAt and updatedAt
 });

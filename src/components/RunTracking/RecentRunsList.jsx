@@ -1,37 +1,39 @@
 import React, { useState, useEffect } from 'react';
 
+const user = JSON.parse(localStorage.getItem('user'));
+const fetchRecentRuns = async () => {
+  if (!user || !user["activities"] || !user["activities"]["runs"]) return;
+  const recentRunIds = user["activities"]["runs"].slice(-5);
+  console.log("Recent run IDs:", recentRunIds);
+  console.log("GET Body",{ "recentRunIds": recentRunIds })
+
+  try {
+    const response = await fetch('http://localhost:5000/api/activities/getActivities', {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-auth-token': localStorage.getItem('token')
+    }
+    });
+    const data = await response.json();
+    console.log("Run data:", data);
+    return data;
+  } catch (error) {
+    console.error('There was a problem with the fetch operation:', error);
+    }
+  };
+
+
 const RecentRunsList = ({ runs = [], onRunSelect }) => {
   // If no runs are provided, we'll use this sample data
-  const [runsList, setRunsList] = useState(runs.length > 0 ? runs : [
-    {
-      id: 1,
-      date: '2025-03-10',
-      distance: 3.1,
-      duration: 25,
-      pace: '8:03',
-      notes: 'Morning run, felt great!',
-      terrain: 'road'
-    },
-    {
-      id: 2,
-      date: '2025-03-08',
-      distance: 5.0,
-      duration: 45,
-      pace: '9:00',
-      notes: 'Weekend long run, some hills',
-      terrain: 'trail'
-    },
-    {
-      id: 3,
-      date: '2025-03-07',
-      distance: 2.5,
-      duration: 20,
-      pace: '8:00',
-      notes: 'Quick lunchtime run',
-      terrain: 'road'
-    }
-  ]);
+  const [runsList, setRunsList] = useState(runs.length > 0 ? runs : []);
 
+  useEffect(() => {
+    if (runs.length === 0) {
+      fetchRecentRuns().then(fetchedRuns => setRunsList(fetchedRuns));
+    }
+  }, [runs]);
+  
   // Effect to update runs when props change
   useEffect(() => {
     if (runs.length > 0) {
@@ -46,8 +48,15 @@ const RecentRunsList = ({ runs = [], onRunSelect }) => {
   };
 
   // Calculate total distance, duration, and average pace
-  const totalDistance = runsList.reduce((sum, run) => sum + parseFloat(run.distance), 0).toFixed(1);
-  const totalDuration = runsList.reduce((sum, run) => sum + parseFloat(run.duration), 0);
+  let totalDistance = 0;
+  let totalDuration = 0;
+
+  for (let i = 0; i < runsList.length; i++) {
+    totalDistance += parseFloat(runsList[i].distance);
+    totalDuration += parseFloat(runsList[i].duration);
+  }
+
+  totalDistance = totalDistance.toFixed(1);
   
   // Calculate average pace (min/mile)
   const calculateAveragePace = () => {
