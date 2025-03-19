@@ -5,8 +5,8 @@
 }
 
 body {
-  background-color: var(--tertiary-color);
-  color: var(--tertiary-color);
+  background-color: var(--primary-color);
+  color: var(--primary-color);
 }
 
 .dashboard-container {
