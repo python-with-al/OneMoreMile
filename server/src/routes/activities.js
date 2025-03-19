@@ -36,10 +36,16 @@ export const updateUserActivities = async (userId, activity) => {
 export const postActivity = async (req, res) => {
     const activity = new Activity({
         type: req.body.type,
+        typeWorkout: req.body.typeWorkout,
         distance: req.body.distance,
         date: req.body.date,
         duration: req.body.duration,
         avgPace: req.body.avgPace,
+        timeOfDay: req.body.timeOfDay,
+        terrain: req.body.terrain,
+        difficulty: req.body.difficulty,
+        weather: req.body.weather,
+        shoe: req.body.shoe,
         notes: req.body.notes,
         calories: req.body.calories,
         avgHR: req.body.avgHR,

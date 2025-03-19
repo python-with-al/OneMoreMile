@@ -1,140 +1,194 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
-import RunEntryForm from '../RunTracking/RunEntryForm';
-import RecentRunsList from '../RunTracking/RecentRunsList';
+import WeeklyPlanner from './WeeklyPlanner';
+import ActivityForm from './ActivityForm.jsx';
+import ProgressGraph from './ProgressGraph.jsx';
+import ShoeTracker from './ShoeTracker';
+import TerrainBreakdown from './TerrainBreakdown';
+import TeamProgress from './TeamProgress';
+import './dashboard.css';
+import { fetchUserData, fetchWeeklyPlan, fetchRecentActivities } from '../../services/api';
 
-// Main dashboard component that contains the run tracking functionality
 const Dashboard = () => {
-    const navigate = useNavigate();
-    const [runs, setRuns] = useState([]);
-    const [selectedRun, setSelectedRun] = useState(null);
-    const [showForm, setShowForm] = useState(false);
-    const calculatePace = (distance, duration) => {
-        if (!distance || !duration) return "0:00";
+  const [userData, setUserData] = useState(null);
+  const [weeklyPlan, setWeeklyPlan] = useState(null);
+  const [recentActivities, setRecentActivities] = useState([]);
+  const [weeklyTotal, setWeeklyTotal] = useState({ miles: 0, time: '0hr 0m' });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  
+  useEffect(() => {
+    const loadDashboardData = async () => {
+      try {
+        setLoading(true);
+        
+        // In a real implementation, these would be API calls
+        // For now, we'll use mock data or local storage
+        const user = JSON.parse(localStorage.getItem('user')) || {};
+        setUserData(user);
+        
+        // Fetch weekly plan
+        const plan = await fetchWeeklyPlan();
+        setWeeklyPlan(plan);
+        
+        // Fetch recent activities
+        const activities = await fetchRecentActivities();
+        setRecentActivities(activities);
+        
+        // Calculate weekly totals
+        calculateWeeklyTotals(activities);
+        
+        setLoading(false);
+      } catch (err) {
+        console.error('Error loading dashboard data:', err);
+        setError('Failed to load dashboard data. Please try again later.');
+        setLoading(false);
+      }
+    };
     
-        const paceInMinutes = duration / distance;
-        const minutes = Math.floor(paceInMinutes);
-        const seconds = Math.round((paceInMinutes - minutes) * 60);
+    loadDashboardData();
+  }, []);
+  
+  const calculateWeeklyTotals = (activities) => {
+    // Filter activities for current week
+    const now = new Date();
+    const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay()));
+    startOfWeek.setHours(0, 0, 0, 0);
     
-        return `${minutes}:${seconds.toString().padStart(2, '0')}`;
-      };
-    const handleRunAdded = (newRun) => {
-        // In a real app, you'd send this to your backend
-        // For now, we'll just add it to our state with a fake ID
-        const runWithId = {
-            ...newRun,
-            id: Date.now(), // Simple way to generate unique IDs for demo
-            pace: calculatePace(newRun.distance, newRun.duration)
-        };
+    const weekActivities = activities.filter(activity => {
+      const activityDate = new Date(activity.date);
+      return activityDate >= startOfWeek;
+    });
+    
+    // Calculate totals
+    const totalMiles = weekActivities.reduce(
+      (sum, activity) => sum + parseFloat(activity.distance || 0), 
+      0
+    );
+    
+    const totalMinutes = weekActivities.reduce(
+      (sum, activity) => sum + parseFloat(activity.duration || 0), 
+      0
+    );
+    
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = Math.round(totalMinutes % 60);
+    
+    setWeeklyTotal({
+      miles: totalMiles.toFixed(1),
+      time: `${hours}hr ${minutes}m`
+    });
+  };
+  
+  const handleActivityLogged = (newActivity) => {
+    // In a real app, you'd send this to your backend
+    // For now, we'll just update the local state
+    setRecentActivities([newActivity, ...recentActivities]);
+    calculateWeeklyTotals([newActivity, ...recentActivities]);
+  };
 
-        setRuns([runWithId, ...runs]);
-        setShowForm(false);
-    };
+  if (loading) {
+    return <div className="loading">Loading dashboard data...</div>;
+  }
 
-    const handleRunSelect = (run) => {
-        setSelectedRun(run);
-        // You could show details or edit form here
-        console.log("Selected run:", run);
-    };
+  if (error) {
+    return <div className="error">{error}</div>;
+  }
 
-    const handleLogout = () => {
-        localStorage.removeItem('token');
-        navigate('/login');
-    };
+const today = new Date();
+const dayNumber = today.getDate();
+const dayInfo = today.toLocaleString('default', { weekday: 'long', month: 'short' });
+const year = today.getFullYear();
 
-    return (
-        <div style={{ 
-            display: 'flex', 
-            flexDirection: 'column', 
-            justifyContent: 'center', 
-            alignItems: 'center', 
-            minHeight: '50vh', 
-            padding: '20px', 
-            boxSizing: 'border-box' ,
-            width: '100%',
-        }}>
-            <img src="/src/assets/OneMoreMile logo.png" alt="Logo" style={{ height: '450px', justifyContect: 'center',alignItems: 'center', }} />
-            <header style={{ 
-                display: 'flex', 
-                justifyContent: 'center', 
-                alignItems: 'center',
-                marginBottom: '30px',
-                borderBottom: '1px solid #eee',
-                paddingBottom: '15px'
-            }}>
+return (
+    <div className="dashboard-container" >
+        <div className="dashboard-header" >
+            <div className="today-info" style={{justifyContent: 'center'}}>
                 <div>
-                    <button 
-                        onClick={() => setShowForm(!showForm)}
-                        style={{ 
-                            backgroundColor: '#4299e1', 
-                            color: 'white', 
-                            padding: '10px 15px', 
-                            border: 'none', 
-                            borderRadius: '4px',
-                            cursor: 'pointer',
-                            marginRight: '10px'
-                        }}
-                    >
-                        {showForm ? 'Cancel' : 'Log New Run'}
-                    </button>
-                    <button 
-                        onClick={handleLogout}
-                        style={{ 
-                            backgroundColor: '#f56565', 
-                            color: 'white', 
-                            padding: '10px 15px', 
-                            border: 'none', 
-                            borderRadius: '4px',
-                            cursor: 'pointer'
-                        }}
-                    >
-                        Logout
+                    <div className="calendar-day">
+                        <div className="day-number">{dayNumber}</div>
+                        <div className="day-info">{dayInfo}</div>
+                        <div className="year">{year}</div>
+                    </div>
+                    <button className='logout-button' onClick={() => window.location.href = '/'}>
+                        <div>
+                            <img src="src/assets/icons/logout.svg" alt="logout icon" style={{ height: '25px'}} />
+                        </div>
+                        <div>Logout</div>
                     </button>
                 </div>
-            </header>
-
-            {showForm ? (
-                <RunEntryForm onRunAdded={handleRunAdded} />
-            ) : (
-                <RecentRunsList runs={runs} onRunSelect={handleRunSelect} />
-            )}
-            
-            {selectedRun && !showForm && (
-                <div style={{ 
-                    marginTop: '20px', 
-                    padding: '15px', 
-                    border: '1px solid #ccc',
-                    borderRadius: '5px',
-                    backgroundColor: '#f9f9f9'
-                }}>
-                    <h2 style={{ marginBottom: '10px' }}>Run Details</h2>
-                    <p><strong>Date:</strong> {selectedRun.date}</p>
-                    <p><strong>Distance:</strong> {selectedRun.distance} miles</p>
-                    <p><strong>Duration:</strong> {selectedRun.duration} minutes</p>
-                    <p><strong>Pace:</strong> {selectedRun.pace} min/mile</p>
-                    {selectedRun.notes && <p><strong>Notes:</strong> {selectedRun.notes}</p>}
-                    
-                    <div style={{ marginTop: '15px', textAlign: 'right' }}>
-                        <button 
-                            onClick={() => setSelectedRun(null)}
-                            style={{ 
-                                backgroundColor: '#718096', 
-                                color: 'white', 
-                                padding: '8px 12px', 
-                                border: 'none', 
-                                borderRadius: '4px',
-                                cursor: 'pointer',
-                                marginRight: '10px'
-                            }}
-                        >
-                            Close
-                        </button>
-                        {/* You could add edit/delete buttons here */}
+            </div>
+            <div style={{justifyContent: 'space-between'}}>
+                <div className="background-image" style={{ position: 'relative' }}>
+                    <img src="src/assets/OneMoreMile logo cropped.svg" alt="background" style={{ width: '90%', opacity: 0.1 }} />
+                    <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', textAlign: 'center' }}>
+                        <h2>OneMoreMile Dashboard</h2>
+                        <h1>Become a Better Runner</h1>
                     </div>
                 </div>
-            )}
+            </div>
+            <div className="navigation-buttons">
+                <button onClick={() => window.location.href = '/profile'} style={{margin: '10px 5px'}}>
+                    <div>
+                        <img src="src/assets/icons/user.svg" alt="profile icon" style={{ height: '40px'}} />
+                    </div>
+                    <div>Profile</div>
+                </button>
+                <button onClick={() => window.location.href = '/activities'} style={{margin: '10px 5px'}}>
+                    <div>
+                        <img src="src/assets/icons/log.svg" alt="log icon" style={{ height: '40px'}} />
+                    </div>
+                    <div>Run Log</div>
+                </button>
+                <button onClick={() => window.location.href = '/team'} style={{margin: '10px 5px'}}>
+                    <div>
+                        <img src="src/assets/icons/team.svg" alt="team icon" style={{ height: '40px'}} />
+                    </div>
+                    <div>Team</div>
+                </button>
+                <button onClick={() => window.location.href = '/analytics'} style={{margin: '10px 5px'}}>
+                    <div>
+                        <img src="src/assets/icons/analytics.svg" alt="analytics icon" style={{ height: '40px'}} />
+                    </div>
+                    <div>Analytics</div>
+                </button>
+                
+            </div>
         </div>
-    );
+        
+        <div className="dashboard-main">
+            <div className="left-column">
+                <ActivityForm onActivityLogged={handleActivityLogged} />
+            </div>
+            
+            <div className="center-column">
+                <div>
+                    {/* <h2 className="weekly-planner-header">WEEKLY PLANNER</h2> */}
+                    <WeeklyPlanner weeklyPlan={weeklyPlan} recentActivities={recentActivities} />
+                </div>
+                
+                <div className="dashboard-footer" style={{ padding: '20px 0', justifyContent: 'flex' }}>
+                    <div className="footer-section" style={{ width: '100%', padding: '20px 0' }}>
+                        <ProgressGraph weeks={10} />
+                    </div>
+                    
+                    <div className="footer-section" style={{ width: '80%', padding: '20px' }}>
+                        <ShoeTracker />
+                    </div>
+                    
+                    <div className="footer-section" style={{ width: '80%', padding: '20px' }}>
+                        <TerrainBreakdown />
+                    </div>
+                    
+                    <div className="footer-section">
+                        <TeamProgress />
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        
+    </div>
+);
 };
 
 export default Dashboard;

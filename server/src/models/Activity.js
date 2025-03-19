@@ -7,6 +7,10 @@ const ActivitySchema = new mongoose.Schema({
     required: true,
     trim: true
   },
+  typeWorkout: {
+    type: String,
+    required: true
+  },
   source: {
     type: String,
     required: true,
@@ -28,6 +32,11 @@ const ActivitySchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  timeOfDay: String,
+  terrain: String,
+  difficulty: String,
+  weather: String,
+  shoe: String,
   notes: String,
   calories: String,
   avgHR: String,

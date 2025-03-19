@@ -4,11 +4,17 @@ import React, { useState } from 'react';
 const RunEntryForm = ({ onRunAdded }) => {
   const [formData, setFormData] = useState({
     type: 'runs',
+    typeWorkout: 'Normal Run',
     source: 'manual',
     date: new Date().toISOString().split('T')[0],
     distance: '',
     duration: '',
     avgPace: '',
+    timeOfDay: '',
+    terrain: '',
+    difficulty: '',
+    weather: '',
+    shoe: '',
     notes: '',
     calories: '',
     avgHR: '',
