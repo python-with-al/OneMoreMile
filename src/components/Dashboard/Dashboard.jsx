@@ -221,8 +221,8 @@ return (
             <div className="center-column">
                 <div>
                     {/* <h2 className="weekly-planner-header">WEEKLY PLANNER</h2> */}
-                    <WeeklyPlanner weeklyPlan={weeklyPlan} recentActivities={recentActivities} />
-                    {/* <WeeklyCalendar weeklyPlan={weeklyPlan} recentActivities={recentActivities} /> */}
+                    {/* <WeeklyPlanner weeklyPlan={weeklyPlan} recentActivities={recentActivities} /> */}
+                    <WeeklyCalendar weeklyPlan={weeklyPlan} recentActivities={recentActivities} />
                 </div>
                 
                 <div className="dashboard-footer" style={{ padding: '20px 0', justifyContent: 'flex' }}>

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import './weeklyCalendar.css'
 
 const WeeklyPlanner = ({ weeklyPlan, recentActivities }) => {
   const [editingCell, setEditingCell] = useState(null);

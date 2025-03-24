@@ -1,0 +1,309 @@
+/* Boxed Weekly Calendar Styles */
+.boxed-calendar-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 8px;
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+  }
+  
+  /* Header Styles */
+  .boxed-calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  
+  .calendar-title {
+    font-size: 16px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .date-range {
+    font-size: 14px;
+    font-weight: normal;
+    color: #555;
+    margin-left: 5px;
+  }
+  
+  .calendar-icon, .clock-icon {
+    color: #444;
+  }
+  
+  .update-info {
+    font-size: 12px;
+    color: #666;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  
+  /* Grid Layout */
+  .boxed-calendar-grid {
+    display: grid;
+    grid-template-rows: auto auto auto;
+    gap: 8px;
+  }
+  
+  /* Day Labels Row */
+  .day-labels-row {
+    display: grid;
+    grid-template-columns: 100px repeat(7, 1fr) 120px;
+    gap: 5px;
+  }
+  
+  .section-label {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 5px 8px;
+    font-weight: bold;
+    background-color: #f5f5f5;
+    border-radius: 4px;
+    gap: 5px;
+  }
+  
+  .section-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+  
+  .plan-indicator {
+    background-color: #10b981; /* green */
+  }
+  
+  .execution-indicator {
+    background-color: #f59e0b; /* orange */
+  }
+  
+  .day-label {
+    text-align: center;
+    background-color: #f0f0f0;
+    border-radius: 4px;
+    padding: 5px 3px;
+    font-weight: bold;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  }
+  
+  .day-number {
+    font-size: 14px;
+    font-weight: bold;
+  }
+  
+  .day-name {
+    font-size: 11px;
+    text-transform: uppercase;
+  }
+  
+  .today-label {
+    background-color: #3b82f6;
+    color: white;
+    box-shadow: 0 1px 3px rgba(59,130,246,0.3);
+  }
+  
+  .summary-label {
+    background-color: #8b5cf6;
+    color: white;
+    text-align: center;
+    border-radius: 4px;
+    padding: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+  }
+  
+  .summary-text {
+    font-size: 12px;
+  }
+  
+  /* Content Rows */
+  .content-row {
+    display: grid;
+    grid-template-columns: 100px repeat(7, 1fr) 120px;
+    gap: 5px;
+  }
+  
+  /* Plan Boxes */
+  .plan-box {
+    background-color: #ebfdf5;
+    border: 1px solid #d1fae5;
+    border-radius: 4px;
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  }
+  
+  .high-priority {
+    border-left: 3px solid #f43f5e;
+  }
+  
+  .medium-priority {
+    border-left: 3px solid #f59e0b;
+  }
+  
+  .priority-label {
+    font-weight: bold;
+    font-size: 11px;
+    color: #111827;
+  }
+  
+  .workout-desc {
+    font-size: 12px;
+    font-weight: 500;
+    color: #1f2937;
+  }
+  
+  .task-type {
+    font-size: 11px;
+    color: #4b5563;
+  }
+  
+  .form-note {
+    font-size: 10px;
+    font-style: italic;
+    color: #6b7280;
+  }
+  
+  /* Execution Boxes */
+  .execution-box {
+    background-color: #fff7ed;
+    border: 1px solid #ffedd5;
+    border-radius: 4px;
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  }
+  
+  .completion-status {
+    font-weight: bold;
+    font-size: 11px;
+    color: #111827;
+  }
+  
+  .pending-status, .blockers-status {
+    font-size: 11px;
+    color: #4b5563;
+  }
+  
+  .reflection-notes {
+    font-size: 10px;
+    font-style: italic;
+    color: #6b7280;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  /* Today Box Highlighting */
+  .today-box {
+    box-shadow: 0 0 0 2px #3b82f6, 0 1px 3px rgba(0,0,0,0.1);
+  }
+  
+  /* Summary Boxes */
+  .summary-box {
+    border-radius: 4px;
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  }
+  
+  .plan-summary {
+    background-color: #f5f3ff;
+    border: 1px solid #ede9fe;
+  }
+  
+  .execution-summary {
+    background-color: #f5f3ff;
+    border: 1px solid #ede9fe;
+  }
+  
+  .summary-item {
+    font-size: 11px;
+    color: #4b5563;
+  }
+  
+  /* Progress Bar */
+  .progress-container {
+    width: 100%;
+    height: 6px;
+    background-color: #e5e7eb;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-top: 3px;
+  }
+  
+  .progress-bar {
+    height: 100%;
+    background-color: #8b5cf6;
+    border-radius: 3px;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 992px) {
+    .boxed-calendar-container {
+      font-size: 11px;
+      padding: 5px;
+    }
+    
+    .day-number {
+      font-size: 12px;
+    }
+    
+    .section-label {
+      padding: 4px 6px;
+    }
+    
+    .plan-box, .execution-box, .summary-box {
+      padding: 5px;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .boxed-calendar-grid {
+      overflow-x: auto;
+      padding-bottom: 10px;
+    }
+    
+    .day-labels-row,
+    .content-row {
+      width: 900px;
+    }
+  }
+  
+  @media print {
+    .boxed-calendar-container {
+      max-width: none;
+      padding: 0;
+    }
+    
+    .boxed-calendar-header {
+      margin-bottom: 15px;
+    }
+    
+    .plan-box, .execution-box, .summary-box {
+      border: 1px solid #000;
+      box-shadow: none;
+    }
+    
+    .today-box {
+      box-shadow: none;
+      border: 2px solid #000;
+    }
+  }
