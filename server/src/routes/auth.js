@@ -63,7 +63,7 @@ router.post(
       jwt.sign(
         payload,
         process.env.JWT_SECRET,
-        { expiresIn: '7d' },
+        { expiresIn: '1h' },
         (err, token) => {
           if (err) throw err;
           res.status(201).json({ token });
@@ -122,10 +122,19 @@ router.post(
       jwt.sign(
         payload,
         process.env.JWT_SECRET,
-        { expiresIn: '7d' },
+        { expiresIn: '1h' },
         (err, token) => {
           if (err) throw err;
-          res.json({ token, user: {
+
+          // Set HTTP-only cookie
+          res.cookie('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production', // Use secure in production
+            sameSite: 'strict',
+            maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days in milliseconds
+          });
+
+          res.json({user: {
             id: user.id,
             name: user.name,
             email: user.email,
@@ -133,7 +142,8 @@ router.post(
             activities: user.activities,
             premium: user.premium,
             payments: user.payments,
-            thirdParty: user.thirdParty
+            thirdParty: user.thirdParty,
+            team: user.team,
           }});
         }
       );
@@ -143,5 +153,25 @@ router.post(
     }
   }
 );
+
+// @route   POST api/auth/logout
+// @desc    Logout user and clear cookie
+// @access  Public
+router.post('/logout', (req, res) => {
+  try {
+    // Clear the HTTP-only cookie
+    res.cookie('token', '', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production', // Use secure in production
+      sameSite: 'strict',
+      expires: new Date(0) // Set expiration to epoch time (effectively deleting it)
+    });
+    
+    return res.status(200).json({ message: 'Logged out successfully' });
+  } catch (err) {
+    console.error(err.message);
+    return res.status(500).json({ message: 'Server error' });
+  }
+});
 
 export default router;

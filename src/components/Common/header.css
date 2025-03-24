@@ -1,0 +1,41 @@
+/* Header.css */
+.header {
+    background-color: white;
+    padding: 0px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border-bottom: 1px solid #ddd; /* This creates the separator line */
+  }
+  
+  .logo {
+    display: flex;
+    align-items: center;
+  }
+  
+  .logo img {
+    height: 72px;
+    margin-right: 10px;
+  }
+  
+  .logo-text {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333;
+  }
+  
+  .nav-menu {
+    display: flex;
+    gap: 20px;
+  }
+  
+  .nav-menu a {
+    text-decoration: none;
+    color: #333;
+    padding: 5px 10px;
+  }
+  
+  .nav-menu a:hover {
+    color: #0078d7;
+  }

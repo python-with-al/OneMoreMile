@@ -4,6 +4,7 @@ import Login from './components/Authentication/Login';
 import Signup from './components/Authentication/Signup';
 import Dashboard from './components/Dashboard/Dashboard';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
+import Header from './components/Common/Header';
 
 function App() {
   return (
@@ -13,7 +14,10 @@ function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/dashboard" element={
           <ProtectedRoute>
-            <Dashboard />
+            <div className="app">
+              <Header />
+              <Dashboard />
+            </div>
           </ProtectedRoute>
         } />
         <Route path="/" element={<Navigate to="/login" replace />} />

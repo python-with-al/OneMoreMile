@@ -13,7 +13,8 @@ const fetchRecentRuns = async () => {
     headers: {
       'Content-Type': 'application/json',
       'x-auth-token': localStorage.getItem('token')
-    }
+    },
+    credentials: 'include'
     });
     const data = await response.json();
     console.log("Run data:", data);

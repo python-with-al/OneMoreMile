@@ -3,6 +3,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import cookieParser from 'cookie-parser';
 
 // Load environment variables
 dotenv.config();
@@ -25,8 +26,14 @@ mongoose.connect(process.env.MONGO_URI, {
 app.use(express.json()); // Parse JSON bodies
 app.use(cors({
   origin: process.env.CLIENT_URL || 'http://localhost:5173', // Vite default port
-  credentials: true
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-auth-token'],
+  credentials: true,
+  preflightContinue: false,
+  optionsSuccessStatus: 204
 }));
+
+app.use(cookieParser());
 
 // Routes
 import authRoutes from './routes/auth.js';

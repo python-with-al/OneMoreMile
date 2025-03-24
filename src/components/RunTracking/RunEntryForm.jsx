@@ -49,9 +49,9 @@ const RunEntryForm = ({ onRunAdded }) => {
       const response = await fetch('http://localhost:5000/api/activities/postActivity', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'x-auth-token': localStorage.getItem('token')
+          'Content-Type': 'application/json'
         },
+        credentials: 'include',
         body: JSON.stringify(data)
       });
       if (!response.ok) {

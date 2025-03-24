@@ -60,6 +60,7 @@ const UserSchema = new mongoose.Schema({
     type: Map,
     default: {}
   },
+  team:String
 }, {
   timestamps: true // Automatically adds createdAt and updatedAt
 });

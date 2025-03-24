@@ -1,3 +1,106 @@
+// tools using APIs
+const user = JSON.parse(localStorage.getItem('user'));
+export const fetchRecentRuns = async (numRuns) => {
+    if (!user || !user["activities"] || !user["activities"]["runs"]) return;
+    console.log("runs:", user["activities"]["runs"])
+    if (numRuns > user["activities"]["runs"].length) numRuns = user["activities"]["runs"].length;
+    console.log("Fetching last ", numRuns)
+    const recentRunIds = user["activities"]["runs"].slice(-1 * numRuns);
+    
+    console.log("Recent run IDs:", recentRunIds);
+    console.log("GET Body",{ "recentRunIds": recentRunIds })
+  
+    try {
+      const response = await fetch('http://localhost:5000/api/activities/getActivities', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+      body: JSON.stringify(recentRunIds)
+      });
+      const data = await response.json();
+      console.log("Run data:", data);
+      return data;
+    } catch (error) {
+      console.error('There was a problem with the fetch operation:', error);
+      }
+    };
+// Update user activity log
+export const updateUserActivities = async (data) => {
+    try {
+        console.log("updateUserActivities req:", data)
+        console.log("data JSON:", JSON.stringify(data));
+        const response = await fetch('http://localhost:5000/api/activities/updateUserActivities', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        credentials: 'include',
+        body: JSON.stringify(data)
+      });
+      return response;
+    } catch (error) {
+      console.error('Error updating user activities:', error);
+      throw error;
+    }
+  };
+
+export const logActivity = async (data) => {
+    try {
+        console.log("Posting activity data:", data);
+        const response = await fetch('http://localhost:5000/api/activities/postActivity', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        credentials: 'include',
+        body: JSON.stringify(data)
+        });
+
+        
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        let responseData;
+        try {
+            responseData = await response.json();
+            console.log("(Activity) Response _id:", responseData._id);
+            console.log("Updating user ID:", user.id);
+            const updatedUser = await updateUserActivities({"userId": user.id, "newActivity": responseData});
+            // getCurrentUser
+            const userData = await updatedUser.json();
+            console.log("updatedUser:", JSON.stringify(userData));
+            delete userData.password;
+            userData.id = userData._id;
+            delete userData._id;
+            localStorage.setItem('user', JSON.stringify(userData));
+        } catch (error) {
+            console.error('There was a problem updating user activities:', error);
+        }
+        return responseData;
+    } catch (error) {
+        console.error('There was a problem with the fetch operation:', error);
+    }
+    };
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // src/services/api.js
 import axios from 'axios';
 
@@ -5,13 +108,12 @@ const API_URL = 'http://localhost:5000/api';
 
 // Create axios instance with auth headers
 const authAxios = () => {
-  const token = localStorage.getItem('token');
   return axios.create({
     baseURL: API_URL,
     headers: {
-      'Content-Type': 'application/json',
-      'x-auth-token': token
-    }
+      'Content-Type': 'application/json'
+    },
+    withCredentials: true
   });
 };
 
@@ -95,30 +197,7 @@ export const fetchRecentActivities = async () => {
   }
 };
 
-// Log new activity
-export const logActivity = async (activityData) => {
-  try {
-    const response = await authAxios().post('/activities/postActivity', activityData);
-    return response.data;
-  } catch (error) {
-    console.error('Error logging activity:', error);
-    throw error;
-  }
-};
 
-// Update user activity log
-export const updateUserActivities = async (userId, activityId) => {
-  try {
-    const response = await authAxios().put('/activities/updateUserActivities', {
-      userId,
-      activityId
-    });
-    return response.data;
-  } catch (error) {
-    console.error('Error updating user activities:', error);
-    throw error;
-  }
-};
 
 // Helper function to calculate pace from distance and duration
 export const calculatePace = (distance, duration) => {
@@ -132,6 +211,7 @@ export const calculatePace = (distance, duration) => {
 };
 
 export default {
+  fetchRecentRuns,
   fetchUserData,
   fetchWeeklyPlan,
   fetchRecentActivities,

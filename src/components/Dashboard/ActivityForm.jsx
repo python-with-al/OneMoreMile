@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
+import { logActivity } from '../../services/api.js';
 
 const ActivityForm = ({ onActivityLogged }) => {
   const [formData, setFormData] = useState({
-    type: 'Running',
+    type: 'runs',
+    typeWorkout: 'normal',
+    source: 'manual',
     date: new Date().toISOString().split('T')[0],
     distance: '',
     duration: '',
@@ -11,7 +14,23 @@ const ActivityForm = ({ onActivityLogged }) => {
     difficulty: '5',
     weather: '',
     shoe: '',
-    notes: ''
+    notes: '',
+    avgHR: '',
+    maxHR: '',
+    avgCadence: '',
+    maxCadence: '',
+    totalAscent: '',
+    totalDescent: '',
+    avgStrideLength: '',
+    avgVerticalRatio: '',
+    avgVerticalOscillation: '',
+    avgGCT: '',
+    avgGCTBalance: '',
+    trainingStressScore: '',
+    steps: '',
+    decompression: '',
+    minElevation: '',
+    maxElevation: ''
   });
   
   const shoesOptions = [
@@ -50,20 +69,15 @@ const ActivityForm = ({ onActivityLogged }) => {
     // Calculate pace
     const pace = calculatePace(formData.distance, formData.duration);
     
-    // Create activity object
-    const newActivity = {
-      ...formData,
-      id: Date.now(), // Temporary ID for frontend use
-      pace,
-      date: formData.date,
-      type: formData.type
-    };
-    
     try {
-      // In a production app, you would submit to your backend here
-      // For now, we'll just update the local state through the callback
+
+        formData['avgPace'] = pace;
+        console.log("Form data before submission:", formData);
+        const response = await logActivity(formData);
+        console.log("response:", response);
+
       if (onActivityLogged) {
-        onActivityLogged(newActivity);
+        onActivityLogged(response);
       }
       
       // Clear form (except date and type)
@@ -76,7 +90,7 @@ const ActivityForm = ({ onActivityLogged }) => {
         notes: ''
       });
       
-      console.log('Activity logged:', newActivity);
+      console.log('Activity logged:', response);
     } catch (error) {
       console.error('Error logging activity:', error);
       alert('Failed to log activity. Please try again.');
@@ -189,6 +203,7 @@ const ActivityForm = ({ onActivityLogged }) => {
               name="duration"
               value={formData.duration}
               onChange={handleChange}
+              step="0.01"
               min="0"
               className="form-control"
               placeholder="Duration in minutes"

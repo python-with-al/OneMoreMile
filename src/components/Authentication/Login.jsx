@@ -34,18 +34,21 @@ const Login = () => {
         credentials: 'include'
       });
 
-      const data = await response.json();
+      
       if (response.status === 400) {
-        setError('Username or password is incorrect');
+        const data = await response.json();
+        setError(data.message || 'Username or password is incorrect');
+        setLoading(false);
         return;
       }
+
+      const data = await response.json();
 
       // Store token in localStorage
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
       console.log('Login successful:', data);
       
-      // Redirect to dashboard
       navigate('/dashboard');
     } catch (err) {
       // For demo purposes, we can bypass the API call
@@ -54,7 +57,7 @@ const Login = () => {
       // localStorage.setItem('token', 'demo-token');
       // navigate('/dashboard');
       console.log('Login error:', err);
-      
+      setError(err instanceof Error ? err.message : 'An unknown error occurred');
       // Uncomment this in production
       // setError(err instanceof Error ? err.message : 'An unknown error occurred');
     } finally {
@@ -72,7 +75,7 @@ const Login = () => {
       width: '100%'
     }}>
       <div style={{ 
-        width: '100%', 
+        width: '50%', 
         maxWidth: '1920px', 
         padding: '2rem', 
         backgroundColor: 'white',
@@ -80,16 +83,15 @@ const Login = () => {
         boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
       }}>
         <img 
-          src="/src/assets/OneMoreMile logo.png" 
+          src="/src/assets/OneMoreMile logo cropped.png" 
           alt="Running Tracker Logo" 
           style={{ 
             display: 'inline-block', 
             margin: '0 auto 0rem', 
-            width: '306px', 
-            height: '306px' 
+            width: '100%', 
           }} 
         />
-        <h2 style={{ textAlign: 'center', marginBottom: '1rem' }}>Login to Running Tracker</h2>
+        <h2 style={{ textAlign: 'center', marginBottom: '1rem' }}>Login to OneMoreMile.com</h2>
         
         {error && (
           <div style={{ 

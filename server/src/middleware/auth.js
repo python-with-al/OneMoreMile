@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 
 export default function(req, res, next) {
   // Get token from header
-  const token = req.header('x-auth-token');
+  const token = req.cookies.token || req.header('x-auth-token');
 
   // Check if no token
   if (!token) {

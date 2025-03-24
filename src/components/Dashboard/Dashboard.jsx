@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import WeeklyPlanner from './WeeklyPlanner';
+import WeeklyCalendar from './WeeklyCalendar';
 import ActivityForm from './ActivityForm.jsx';
 import ProgressGraph from './ProgressGraph.jsx';
 import ShoeTracker from './ShoeTracker';
 import TerrainBreakdown from './TerrainBreakdown';
 import TeamProgress from './TeamProgress';
 import './dashboard.css';
-import { fetchUserData, fetchWeeklyPlan, fetchRecentActivities } from '../../services/api';
+import { fetchUserData, fetchWeeklyPlan, fetchRecentRuns, logActivity } from '../../services/api.js';
+import DashboardHeader from './DashboardHeader';
+import LogoutButton from '../Authentication/Logout.jsx';
 
 const Dashboard = () => {
   const [userData, setUserData] = useState(null);
@@ -31,7 +34,7 @@ const Dashboard = () => {
         setWeeklyPlan(plan);
         
         // Fetch recent activities
-        const activities = await fetchRecentActivities();
+        const activities = await fetchRecentRuns(14);
         setRecentActivities(activities);
         
         // Calculate weekly totals
@@ -80,8 +83,7 @@ const Dashboard = () => {
   };
   
   const handleActivityLogged = (newActivity) => {
-    // In a real app, you'd send this to your backend
-    // For now, we'll just update the local state
+    // logActivity(newActivity);
     setRecentActivities([newActivity, ...recentActivities]);
     calculateWeeklyTotals([newActivity, ...recentActivities]);
   };
@@ -96,12 +98,68 @@ const Dashboard = () => {
 
 const today = new Date();
 const dayNumber = today.getDate();
-const dayInfo = today.toLocaleString('default', { weekday: 'long', month: 'short' });
+const dayWeek = today.toLocaleString('default', { weekday: 'short' });
+const dayMonth = today.toLocaleString('default', { month: 'short' });
 const year = today.getFullYear();
 
+const headerActions = (
+    <>
+        {Object.keys(userData.premium).length > 0 && (
+            <button className="btn-primary" onClick={() => window.location.href = '/team'}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    <img src="src/assets/icons/team.svg" alt="team icon" style={{ height: '25px' }} />
+                    <span style={{ fontSize: '10px' }}>Team</span>
+                </div>
+            </button>
+        )}
+        {Object.keys(userData.premium).length > 0 && (
+            <button className="btn-primary" onClick={() => window.location.href = '/analytics'}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    <img src="src/assets/icons/analytics.svg" alt="analytics icon" style={{ height: '25px' }} />
+                    <span style={{ fontSize: '10px' }}>Analytics</span>
+                </div>
+            </button>
+        )}
+        <button className="btn-primary" onClick={() => window.location.href = '/log'}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <img src="src/assets/icons/log.svg" alt="log icon" style={{ height: '25px' }} />
+                <span style={{ fontSize: '10px' }}>Run Log</span>
+            </div>
+        </button>
+        <button className="btn-primary" onClick={() => window.location.href = '/profile'}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <img src="src/assets/icons/user.svg" alt="profile icon" style={{ height: '25px' }} />
+                <span style={{ fontSize: '10px' }}>Profile</span>
+            </div>
+        </button>
+        <LogoutButton />
+        
+        
+    </>
+);
+
+const dateIcon = (
+    <>
+        <div className="calendar-day">
+            <div className="day-info">{dayWeek}</div>
+            <div className="day-info">{dayMonth} {dayNumber}</div>
+            <div className="year">{year}</div>
+        </div>
+    </>
+)
+
 return (
-    <div className="dashboard-container" >
-        <div className="dashboard-header" >
+    <div>
+        <DashboardHeader 
+        title={
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+                {dateIcon}
+                <span style={{ marginLeft: '10px' }}>{`${userData.name}'s Training Summary`}</span>
+            </div>
+        } 
+        rightContent={headerActions}  />
+        
+        {/* <div className="dashboard-header" >
             <div className="today-info" style={{justifyContent: 'center'}}>
                 <div>
                     <div className="calendar-day">
@@ -112,14 +170,14 @@ return (
                     <button className='logout-button' onClick={() => window.location.href = '/'}>
                         <div>
                             <img src="src/assets/icons/logout.svg" alt="logout icon" style={{ height: '25px'}} />
-                        </div>
+                        <</div>/div>
                         <div>Logout</div>
                     </button>
-                </div>
+                </</div>div>
             </div>
             <div style={{justifyContent: 'space-between'}}>
                 <div className="background-image" style={{ position: 'relative' }}>
-                    <img src="src/assets/OneMoreMile logo cropped.svg" alt="background" style={{ width: '90%', opacity: 0.1 }} />
+                    <img src="src/assets/OneMoreMile logo cropped.svg" alt="background" style={{ height: '56px', opacity: 0.1 }} />
                     <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', textAlign: 'center' }}>
                         <h2>OneMoreMile Dashboard</h2>
                         <h1>Become a Better Runner</h1>
@@ -153,7 +211,7 @@ return (
                 </button>
                 
             </div>
-        </div>
+        </div> */}
         
         <div className="dashboard-main">
             <div className="left-column">
@@ -164,6 +222,7 @@ return (
                 <div>
                     {/* <h2 className="weekly-planner-header">WEEKLY PLANNER</h2> */}
                     <WeeklyPlanner weeklyPlan={weeklyPlan} recentActivities={recentActivities} />
+                    {/* <WeeklyCalendar weeklyPlan={weeklyPlan} recentActivities={recentActivities} /> */}
                 </div>
                 
                 <div className="dashboard-footer" style={{ padding: '20px 0', justifyContent: 'flex' }}>

@@ -5,7 +5,13 @@ import User from '../models/User.js';
 // Get all activities
 export const getActivities = async (req, res) => {
     try {
-        const activities = await Activity.find();
+        const activities = [];
+        for (const item of req.body) {
+            const activity = await Activity.findById(item);
+            if (activity) {
+                activities.push(activity);
+            }
+        }
         res.json(activities);
     } catch (err) {
         res.status(500).json({ message: err.message });
@@ -13,23 +19,34 @@ export const getActivities = async (req, res) => {
 };
 
 // Post a new activity
-export const updateUserActivities = async (userId, activity) => {
+export const updateUserActivities = async (req, res) => {
     try {
-        const user = await User.findById(userId);
+        console.log("body:", req.body);
+        const user = await User.findById(req.body.userId);
         if (!user) {
-            throw new Error('User not found');
+            res.status(404).json({ message: "User Not Found" });
         }
-
-        const activityType = activity.type.toLowerCase();
-        if (Object.prototype.hasOwnProperty.call(user.activities, activityType)) {
-            user.activities[activityType].push(activity._id);
+        
+        console.log("user:", user)
+        const activityType = req.body.newActivity.type.toLowerCase();
+        console.log("activityType:", activityType)
+        try  {
+            console.log("Trying to push activity id:", req.body.newActivity._id);
+            
+            user.activities.get('runs').push(req.body.newActivity._id);
+            user.markModified('activities'); // Important!
+            console.log("attempting to save user");
             await user.save();
-        } else {
-            user.activities["others"].push(activity._id);
+            res.status(201).json(user);
+        } catch {
+            user.activities.get('others').push(req.body.newActivity._id);
+            user.markModified('activities'); // Important!
             await user.save();
+            
+            res.status(201).json(user);
         }
     } catch (err) {
-        throw new Error(err.message);
+        res.status(400).json({ message: err.message });
     }
 };
 
@@ -78,10 +95,10 @@ export const postActivity = async (req, res) => {
 const router = express.Router();
 
 // Define routes
-router.get('/getActivities', getActivities);
+router.post('/getActivities', getActivities);
 router.post(
     '/postActivity',
     postActivity);
-router.put('/updateUserActivities', updateUserActivities);
+router.post('/updateUserActivities', updateUserActivities);
 
 export default router;
